@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 class PATH_GAME:
     def __init__(self, grid_size, distribution, mode, start, end,**kwargs):
         """Possible distributions: normal, randint, logistic, poisson, chisquare"""
-        kwargs = {'minimum':0,'maximum':10,'mean':0,'scale': 10,'lam':0,'df':2}
+        kwargs = {'minimum':0,'maximum':10,'mean':10,'scale': 10,'lam':10,'df':2}
         self.distr = getattr(np.random,distribution)
         
         if distribution == 'normal' or distribution == 'logistic':
@@ -81,7 +81,7 @@ class PATH_GAME:
     def start_game(self):
         
         self.visited = []
-        self.cost_list = []
+        self.cost_list = [self.Game[self.start_node[0],self.start_node[1]]]
         a1 = min(self.start_node[0],self.end_node[0])
         a2 = max(self.start_node[0],self.end_node[0])
         b1 = min(self.start_node[1],self.end_node[1])
@@ -101,8 +101,9 @@ class PATH_GAME:
         
         self.best_path(self.start_node, self.end_node, direct)
         
-        print('best path:',self.visited)
-        print('cost:', sum(self.cost_list))
+        # print('best path:',self.visited)
+        # print('cost:', sum(self.cost_list))
+        return sum(self.cost_list)
     
     def dijkstra(self):
         pass
@@ -130,15 +131,16 @@ class PATH_GAME:
 
         direct = direction
         self.visited.append(starting)
-        self.cost_list.append(self.play_ground[starting[0],starting[1]])
+        # self.cost_list.append(self.play_ground[starting[0],starting[1]])
         adjacent = self.find_neighbour(starting, direct)
         
         if starting == ending:
-            print('finished')
+            # print('finished')
             return self.visited
         elif ending in adjacent:
             next_cord = ending
-            next_value = self.play_ground[ending[0], ending[1]]
+            # next_value = self.play_ground[ending[0], ending[1]]
+            next_value = self.cost_func(starting, ending)
         else:
             
             next_cord = []
@@ -151,6 +153,38 @@ class PATH_GAME:
                 if self.cost_func(starting, cell) < next_value:
                     next_cord = cell
                     next_value = self.cost_func(starting, cell)
-
+        self.cost_list.append(next_value)
         return self.best_path(next_cord, ending,direct) 
+
+    
  
+def Game_analysis():
+    
+    
+    fig = plt.figure()
+    ax1 = fig.add_subplot(121)
+    all_costs = []
+    x = []
+    for i in range(2,16):
+        G = PATH_GAME((i,i),'randint',2,[0,0],[i-1,i-1],minimum = 2,maximum = 20)
+        all_costs.append(G.start_game())
+        x.append(i)
+        
+    ax1.bar(x, all_costs)
+    
+    ax2 = fig.add_subplot(122)
+    dists = ['normal', 'randint', 'logistic', 'poisson', 'chisquare']
+    all_costs = []
+    for dist in dists:
+        G = PATH_GAME((10,10),dist,2,[0,0],[9,9])
+        all_costs.append(G.start_game())
+        
+    ax2.bar([0,1,2,3,4],all_costs)
+        
+    
+    
+    plt.show()
+
+
+            
+            
