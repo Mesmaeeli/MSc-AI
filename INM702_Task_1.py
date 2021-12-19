@@ -59,7 +59,7 @@ class PATH_GAME:
         z = 0
         dx = dy = 0.5
         dz = self.cost_list
-        
+
         
         fig = plt.figure()
         fig.suptitle('Possible Shortest Path: {}'.format(sum(self.cost_list)))
@@ -231,22 +231,21 @@ class PATH_GAME:
             final.append([i // self.Game.shape[0], i % self.Game.shape[0]])
             self.cost_list.append(self.Game[i // self.Game.shape[0],i % self.Game.shape[0]])
             final_cost += self.Game[i // self.Game.shape[0],i % self.Game.shape[0]]
-        
+
         if self.mode == 2:
             a = np.array(self.cost_list[:-1])
             b = np.array(self.cost_list[1:])
             
             final_cost = np.sum(np.abs(a-b))
+            self.cost_list = np.abs(a-b)
+ 
+            self.cost_list = np.append(self.cost_list,0)
         self.visited = final    
-            
-        print(final_cost)      
-        
-        print(final)
+  
+
         return final
         
-        
-
-    
+           
     def to_be_visited(self):
       next_vertex = -100
       # Choosing the vertex with the minimum distance
@@ -284,8 +283,8 @@ def Game_analysis():
     
     
     plt.show()
-
-G = PATH_GAME((10,10),'randint',1,[0,0],[9,9], 'dijkstra')
+np.random.seed(2)
+G = PATH_GAME((10,10),'randint',2,[0,0],[9,9], 'dijkstra')
 
 
             
